@@ -69,11 +69,7 @@ function triggerTractorAnimation(index, toolUsed) {
         overlay.style.backgroundImage = "url('colheitadeira.png')";
     } else {
         // Trator faz o resto: arar, plantar, bio e herbicida
-    if (toolUsed === 'plowed') {
-       overlay.style.backgroundImage = "url('trator.png')";
-    }
-    if (toolUsed === 'planted') {
-        overlay.style.backgroundImage = "url('tratorP.png')";
+        overlay.style.backgroundImage = "url('trator.png')";
     }
     
     plotEl.classList.add('working');
