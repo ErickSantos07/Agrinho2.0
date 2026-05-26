@@ -105,8 +105,8 @@ function handlePlotAction(index) {
 
         case 'plant':
             // REGRA NOVA: Agora verifica se tem moedas suficientes para plantar (Ex: $2) e deduz o valor
-            if (plot.isPlowed && plot.status === 'empty' && seeds > 0 && coins >= 5) {
-                coins -= 5; // Deduz o custo do plantio
+            if (plot.isPlowed && plot.status === 'empty' && seeds > 0 && coins >= 2) {
+                coins -= 2; // Deduz o custo do plantio
                 seeds--;
                 plot.status = 'planted';
                 plot.growthProgress = 0;
