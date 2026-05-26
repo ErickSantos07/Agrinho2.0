@@ -56,25 +56,30 @@ function weatherEngine() {
     }
 }
 
-// Ativa a animação visual usando os arquivos de imagem do GitHub
+// Ativa a animação visual usando uma foto diferente para cada tipo de ação
 function triggerTractorAnimation(index, toolUsed) {
     const plotEl = document.getElementById(`plot-${index}`);
     const overlay = plotEl.querySelector('.tractor-overlay');
     
-    // Limpa o texto antigo para usar apenas a imagem
+    // Limpa textos antigos
     overlay.innerText = "";
     
-    // Define qual imagem vai aparecer com base na ação
-    if (toolUsed === 'harvest') {
-        overlay.style.backgroundImage = "url('colheitadeira.png')";
-    } else {
-        // Trator faz o resto: arar, plantar, bio e herbicida
+    // Configura o nome da foto para cada ação (Substitua os nomes entre aspas se precisar)
+    if (toolUsed === 'plow') {
         overlay.style.backgroundImage = "url('trator.png')";
+    } else if (toolUsed === 'plant') {
+        overlay.style.backgroundImage = "url('tratorP.png')";
+    } else if (toolUsed === 'bio') {
+        overlay.style.backgroundImage = "url('tratorB.png')";
+    } else if (toolUsed === 'herb') {
+        overlay.style.backgroundImage = "url('tratorH.png')";
+    } else if (toolUsed === 'harvest') {
+        overlay.style.backgroundImage = "url('colheitadeira.png')";
     }
     
     plotEl.classList.add('working');
     
-    // Remove a animação após 2 segundos
+    // Remove a animação após 2 segundos e limpa a imagem do terreno
     setTimeout(() => {
         plotEl.classList.remove('working');
         overlay.style.backgroundImage = "none";
