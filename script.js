@@ -72,6 +72,9 @@ function triggerTractorAnimation(index, toolUsed) {
     if (toolUsed === 'plowed') {
        overlay.style.backgroundImage = "url('trator.png')";
     }
+    if (toolUsed === 'planted') {
+        overlay.style.backgroundImage = "url('tratorP.png')";
+    }
     
     plotEl.classList.add('working');
     
