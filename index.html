@@ -4,33 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador de Fazenda Retro</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-    <h1>Fazenda 1D</h1>
-
-    <div class="painel">
-        <h3>Status da Fazenda</h3>
-        <p>Estação: <strong id="txt-estacao">Primavera</strong> (Turno: <span id="txt-turno">1</span>/10 para mudar)</p>
-        <p>Clima: <strong id="txt-clima">Ensolarado</strong></p>
-        <p>Estágio do Plantio: <strong id="txt-estagio">Preparado para Plantar</strong></p>
-        <p>Insumo Aplicado nesta Safra: <strong id="txt-insumo">Nenhum</strong></p>
-
-        <div class="campo-animacao" id="tela-campo">[....................]</div>
-
-        <div class="botoes">
-            <button onclick="passarTurno()">Avançar Tempo</button>
-            <button id="btn-plantar" onclick="plantar()">Plantar (Trator)</button>
-            <button id="btn-insumo" onclick="aplicarInsumo()">Aplicar Herbicida/Bio</button>
-            <button id="btn-colher" onclick="colher()">Colher (Colheitadeira)</button>
-        </div>
-
-        <div class="logs" id="caixa-logs">
-            - Jogo iniciado. Prepare a terra e plante!
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .painel {
+            border: 2px solid #333;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #1e1e1e;
+            width: 90%;
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+        .campo-animacao {
+            background-color: #000;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 4px;
+            min-height: 25px;
+            white-space: pre;
+            margin: 15px 0;
+            color: #00ff00;
+            border: 1px dashed #444;
+        }
+        .botoes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        button {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        button:hover {
+            background-color: #388e3c;
+        }
+        button:disabled {
+            background-color: #555;
+            color: #888;
+            cursor: not-allowed;
+        }
+        .logs {
+            font-size: 13px;
+            color: #aaa;
+            max-height: 100px;
+            overflow-y: auto;
+            border-top:

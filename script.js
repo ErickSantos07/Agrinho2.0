@@ -1,122 +1,228 @@
-// Configurações do Jogo
-let turnoEstacao = 1;
-const turnosParaMudar = 10; 
-const estacoes = ["Primavera", "Verão", "Outono", "Inverno"];
-let indiceEstacao = 0;
+// Configuração Inicial do Jogo
+let coins = 30;
+let seeds = 4;
+let currentTool = 'plow'; // Começa com Arar habilitado
+let isRaining = false;
 
-const climas = ["Ensolarado", "Nublado", "Chuvoso"];
-let climaAtual = "Ensolarado";
+// Estrutura para os 2 grandes terrenos
+let farmPlots = [
+    { isPlowed: false, status: 'empty', hasWeed: false, modifier: 1.0, growthProgress: 0, requiredGrowth: 3 },
+    { isPlowed: false, status: 'empty', hasWeed: false, modifier: 1.0, growthProgress: 0, requiredGrowth: 3 }
+];
 
-let estagioPlantio = "Preparado"; 
-let insumoAplicado = false;
-let jaPerdeuTempoInsumo = false; 
+const weatherDisplay = document.getElementById('weather-display');
+const statusPanel = document.querySelector('.status-panel');
 
-// Elementos do HTML
-const txtEstacao = document.getElementById("txt-estacao");
-const txtTurno = document.getElementById("txt-turno");
-const txtClima = document.getElementById("txt-clima");
-const txtEstagio = document.getElementById("txt-estagio");
-const txtInsumo = document.getElementById("txt-insumo");
-const telaCampo = document.getElementById("tela-campo");
-const caixaLogs = document.getElementById("caixa-logs");
-
-function atualizarInterface() {
-    txtEstacao.innerText = estacoes[indiceEstacao];
-    txtTurno.innerText = turnoEstacao;
-    txtClima.innerText = climaAtual;
+function init() {
+    setupTools();
+    render();
     
-    if (estagioPlantio === "Preparado") txtEstagio.innerText = "Preparado para Plantar";
-    if (estagioPlantio === "Crescimento") txtEstagio.innerText = "Em Crescimento (Janela de Insumos Aberta!)";
-    if (estagioPlantio === "Pronto") txtEstagio.innerText = "Pronto para Colheita";
-
-    txtInsumo.innerText = insumoAplicado ? "Sim (Protegido/Nutrido)" : (jaPerdeuTempoInsumo ? "Perdeu o Tempo!" : "Nenhum");
-
-    document.getElementById("btn-plantar").disabled = estagioPlantio !== "Preparado";
-    document.getElementById("btn-insumo").disabled = estagioPlantio !== "Crescimento" || insumoAplicado;
-    document.getElementById("btn-colher").disabled = estagioPlantio !== "Pronto";
+    // Loops Principais do Ciclo Agrícola
+    setInterval(weatherEngine, 8000); // Altera o clima a cada 8 segundos
+    setInterval(cropGrowthLoop, 2000); // Atualiza crescimento a cada 2 segundos
+    setInterval(weedSpawnEngine, 12000); // Chance de nascer praga a cada 12 segundos
 }
 
-function log(mensagem) {
-    caixaLogs.innerHTML = `- ${mensagem}<br>` + caixaLogs.innerHTML;
-}
-
-function rodarAnimacao1D(tipo, callback) {
-    let largura = 20;
-    let frame = 0;
-    let maquina = tipo === "trator" ? "Oo=o>" : "[|||]>-o";
-    
-    const botoes = document.querySelectorAll("button");
-    botoes.forEach(b => b.disabled = true);
-
-    let intervalo = setInterval(() => {
-        if (frame <= largura) {
-            let estradasAntes = ".".repeat(frame);
-            let estradaDepois = ".".repeat(largura - frame);
-            telaCampo.innerText = `[${estradasAntes}${maquina}${estradaDepois}]`;
-            frame++;
-        } else {
-            clearInterval(intervalo);
-            telaCampo.innerText = "[....................]"; 
-            botoes.forEach(b => b.disabled = false);
-            callback(); 
-        }
-    }, 80); 
-}
-
-function plantar() {
-    rodarAnimacao1D("trator", () => {
-        estagioPlantio = "Crescimento";
-        insumoAplicado = false;
-        jaPerdeuTempoInsumo = false;
-        log("Sementes plantadas com o trator!");
-        atualizarInterface();
-    });
-}
-
-function aplicarInsumo() {
-    if (estagioPlantio === "Crescimento") {
-        rodarAnimacao1D("trator", () => {
-            insumoAplicado = true;
-            log("Herbicida e Biofertilizante aplicados com sucesso via trator!");
-            atualizarInterface();
+// Controla as ferramentas ativas via Rato
+function setupTools() {
+    const tools = document.querySelectorAll('.tool-btn, .tool-btn-special');
+    tools.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tools.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTool = btn.id.replace('tool-', '');
         });
-    } else {
-        log("Ação indisponível.");
-    }
-}
+    });
 
-function colher() {
-    rodarAnimacao1D("colheitadeira", () => {
-        log("Safra recolhida com sucesso pela colheitadeira!");
-        estagioPlantio = "Preparado";
-        atualizarInterface();
+    document.getElementById('btn-buy-seed').addEventListener('click', () => {
+        if (coins >= 3) {
+            coins -= 3;
+            seeds++;
+            render();
+        }
     });
 }
 
-function passarTurno() {
-    turnoEstacao++;
+// Mecânica de Clima (Chuva vs Sol)
+function weatherEngine() {
+    isRaining = Math.random() < 0.45; // 45% de hipótese de chover a cada ciclo
     
-    if (estagioPlantio === "Crescimento") {
-        estagioPlantio = "Pronto";
-        if (!insumoAplicado) {
-            jaPerdeuTempoInsumo = true;
-            log("Aviso: O plantio amadureceu! Você perdeu a janela para aplicar o herbicida/biofertilizante desta safra.");
-        }
+    if (isRaining) {
+        weatherDisplay.innerText = "🌧️ Clima: Chovendo (Solo Nutrito)";
+        statusPanel.classList.add('rainy-day');
+    } else {
+        weatherDisplay.innerText = "☀️ Clima: Ensolarado";
+        statusPanel.classList.remove('rainy-day');
     }
-
-    if (Math.random() > 0.5) {
-        climaAtual = climas[Math.floor(Math.random() * climas.length)];
-        log(`O clima mudou para: ${climaAtual}`);
-    }
-
-    if (turnoEstacao > turnosParaMudar) {
-        turnoEstacao = 1;
-        indiceEstacao = (indiceEstacao + 1) % estacoes.length;
-        log(`A estação mudou! Bem-vindo ao ${estacoes[indiceEstacao]}.`);
-    }
-
-    atualizarInterface();
 }
 
-// Inicializa o estado do jogo
-atualizarInterface();
+// Ativa a animação visual do trator trabalhando
+function triggerTractorAnimation(index, labelText) {
+    const plotEl = document.getElementById(`plot-${index}`);
+    const overlay = plotEl.querySelector('.tractor-overlay');
+    overlay.innerText = labelText;
+    
+    plotEl.classList.add('working');
+    
+    // Remove a classe após a animação de 1.5s terminar
+    setTimeout(() => {
+        plotEl.classList.remove('working');
+    }, 1500);
+}
+
+// Ações ao clicar com o rato num dos terrenos grandes
+function handlePlotAction(index) {
+    let plot = farmPlots[index];
+    const plotEl = document.getElementById(`plot-${index}`);
+    
+    // Evita cliques se o trator já estiver a passar na tela
+    if (plotEl.classList.contains('working')) return;
+
+    switch (currentTool) {
+        case 'plow':
+            if (!plot.isPlowed && plot.status === 'empty' && coins >= 5) {
+                coins -= 5;
+                plot.isPlowed = true;
+                triggerTractorAnimation(index, "🚜 Trator Arando Solo... ($5)");
+            }
+            break;
+
+        case 'plant':
+            if (plot.isPlowed && plot.status === 'empty' && seeds > 0) {
+                seeds--;
+                plot.status = 'planted';
+                plot.growthProgress = 0;
+                // Se não estiver a chover, a planta exige mais ciclos para crescer
+                plot.requiredGrowth = isRaining ? 3 : 5; 
+                plot.modifier = 1.0; // Reseta modificadores anteriores
+                triggerTractorAnimation(index, "🚜 Semeadora Plantando Sementes...");
+            }
+            break;
+
+        case 'bio':
+            if (plot.status !== 'empty' && plot.status !== 'ready' && plot.modifier === 1.0 && coins >= 8) {
+                coins -= 8;
+                plot.modifier = 1.7; // Incremento de 70% no rendimento
+                triggerTractorAnimation(index, "🚛 Pulverizador aplicando Biofertilizante... ($8)");
+            }
+            break;
+
+        case 'herb':
+            if (plot.hasWeed && coins >= 4) {
+                coins -= 4;
+                plot.hasWeed = false;
+                plot.modifier = 0.75; // Prejuízo de 25% na produtividade por aplicar químicos
+                triggerTractorAnimation(index, "🚛 Trator aplicando Herbicida... ($4)");
+            }
+            break;
+
+        case 'harvest':
+            if (plot.status === 'ready') {
+                // Lucro Base: Terreno grande gera 15 moedas
+                let baseProfit = 15;
+                
+                // Penalidade severa se colher com pragas ativas no mato
+                if (plot.hasWeed) baseProfit -= 6;
+                
+                // Se não choveu durante o término da maturação, perde rendimento por seca
+                if (!isRaining) baseProfit -= 4;
+
+                let finalProfit = Math.max(2, Math.round(baseProfit * plot.modifier));
+                coins += finalProfit;
+
+                // Reseta completamente o lote grande para o estado bruto primário
+                plot.status = 'empty';
+                plot.isPlowed = false;
+                plot.hasWeed = false;
+                plot.modifier = 1.0;
+                plot.growthProgress = 0;
+                
+                triggerTractorAnimation(index, "🧺 Colhendo e Carregando Safra!");
+            }
+            break;
+    }
+    
+    // Atualiza a tela logo após a ação ser validada
+    setTimeout(render, 30);
+}
+
+// Loop de Crescimento Temporal das Plantas nos grandes terrenos
+function cropGrowthLoop() {
+    farmPlots.forEach((plot) => {
+        if (plot.status === 'planted' || plot.status === 'growing') {
+            
+            // Fatores de atraso: Erva daninha atrasa o progresso; falta de chuva também!
+            let advanceChance = 1.0;
+            if (plot.hasWeed) advanceChance -= 0.3;
+            if (!isRaining) advanceChance -= 0.2; // Sem chuva demora um pouco mais
+
+            if (Math.random() <= advanceChance) {
+                plot.growthProgress++;
+            }
+
+            // Altera os status intermédios com base no avanço
+            if (plot.growthProgress >= plot.requiredGrowth) {
+                plot.status = 'ready';
+            } else if (plot.growthProgress >= Math.floor(plot.requiredGrowth / 2)) {
+                plot.status = 'growing';
+            }
+        }
+    });
+    render();
+}
+
+// Nascimento Espontâneo de Ervas Daninhas / Pragas
+function weedSpawnEngine() {
+    let target = Math.floor(Math.random() * 2);
+    if (farmPlots[target].status !== 'empty') {
+        farmPlots[target].hasWeed = true;
+        render();
+    }
+}
+
+// Atualiza o estado visual completo dos componentes HTML
+function render() {
+    document.getElementById('coins').innerText = coins;
+    document.getElementById('seeds').innerText = seeds;
+
+    farmPlots.forEach((plot, index) => {
+        const plotEl = document.getElementById(`plot-${index}`);
+        const contentEl = plotEl.querySelector('.plot-content');
+        const indicatorsEl = plotEl.querySelector('.indicators');
+
+        // Atualiza a classe de Solo Arado
+        if (plot.isPlowed && plot.status === 'empty') {
+            plotEl.classList.add('plowed');
+            contentEl.innerText = "🚜 Solo Arado (Pronto p/ Plantio)";
+        } else if (!plot.isPlowed && plot.status === 'empty') {
+            plotEl.classList.remove('plowed');
+            contentEl.innerText = "🟫 Terreno Bruto (Precisa Arar)";
+        } else {
+            plotEl.classList.remove('plowed'); // Quando plantado assume outra cor visual por cima
+        }
+
+        // Exibe Emojis de desenvolvimento da lavoura grande
+        if (plot.status === 'planted') contentEl.innerText = "🌱 Sementes Brotando...";
+        if (plot.status === 'growing') contentEl.innerText = "🌿 Lavoura em Crescimento...";
+        if (plot.status === 'ready') contentEl.innerText = "🌾 Pronto para Colheita!";
+
+        // Renderiza os crachás de status (Badges)
+        indicatorsEl.innerHTML = '';
+        if (plot.modifier > 1.0 && plot.status !== 'empty') {
+            indicatorsEl.innerHTML += `<span class="badge bio">Biofertilizado (Rendimento +70%)</span>`;
+        }
+        if (plot.modifier < 1.0 && plot.status !== 'empty') {
+            indicatorsEl.innerHTML += `<span class="badge herb">Herbicida Usado (Rendimento -25%)</span>`;
+        }
+        if (plot.hasWeed) {
+            indicatorsEl.innerHTML += `<span class="badge weed">⚠️ Infestado de Pragas</span>`;
+        }
+    });
+}
+
+// Vincula os cliques diretamente aos terrenos grandes
+window.onload = () => {
+    init();
+    document.getElementById('plot-0').addEventListener('click', () => handlePlotAction(0));
+    document.getElementById('plot-1').addEventListener('click', () => handlePlotAction(1));
+};
