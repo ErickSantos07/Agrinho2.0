@@ -56,18 +56,29 @@ function weatherEngine() {
     }
 }
 
-// Ativa a animação visual do implemento trabalhando (Modelado em 1D sem emojis)
-function triggerTractorAnimation(index, labelText) {
+// Ativa a animação visual usando os arquivos de imagem do GitHub
+function triggerTractorAnimation(index, toolUsed) {
     const plotEl = document.getElementById(`plot-${index}`);
     const overlay = plotEl.querySelector('.tractor-overlay');
-    overlay.innerText = labelText;
+    
+    // Limpa o texto antigo para usar apenas a imagem
+    overlay.innerText = "";
+    
+    // Define qual imagem vai aparecer com base na ação
+    if (toolUsed === 'harvest') {
+        overlay.style.backgroundImage = "url('colheitadeira.png')";
+    } else {
+        // Trator faz o resto: arar, plantar, bio e herbicida
+        overlay.style.backgroundImage = "url('trator.png')";
+    }
     
     plotEl.classList.add('working');
     
-    // Remove a classe após a animação de 1.5s terminar
+    // Remove a animação após 2 segundos
     setTimeout(() => {
         plotEl.classList.remove('working');
-    }, 1500);
+        overlay.style.backgroundImage = "none";
+    }, 2000);
 }
 
 // Ações ao clicar com o rato num dos terrenos grandes
@@ -83,7 +94,7 @@ function handlePlotAction(index) {
             if (!plot.isPlowed && plot.status === 'empty' && coins >= 5) {
                 coins -= 5;
                 plot.isPlowed = true;
-                triggerTractorAnimation(index, "Oo=o> [Arando Solo...] Oo=o>");
+                triggerTractorAnimation(index, 'plow');
             }
             break;
 
@@ -94,7 +105,7 @@ function handlePlotAction(index) {
                 plot.growthProgress = 0;
                 plot.requiredGrowth = isRaining ? 3 : 5; 
                 plot.modifier = 1.0; // Reseta modificadores anteriores
-                triggerTractorAnimation(index, "Oo=o> [Semeando Campo...] Oo=o>");
+                triggerTractorAnimation(index,'plant');
             }
             break;
 
@@ -104,7 +115,7 @@ function handlePlotAction(index) {
                 if (plot.modifier === 1.0 && coins >= 8) {
                     coins -= 8;
                     plot.modifier = 1.7; // Incremento de 70% no rendimento
-                    triggerTractorAnimation(index, "Oo=o> [Aplicando Biofertilizante...] Oo=o>");
+                    triggerTractorAnimation(index,'bio');
                 }
             } else {
                 alert("Ação inválida! O Biofertilizante só pode ser aplicado na fase de crescimento. Você perdeu o tempo deste plantio!");
@@ -118,7 +129,7 @@ function handlePlotAction(index) {
                     coins -= 4;
                     plot.hasWeed = false;
                     plot.modifier = 0.75; // Prejuízo de 25% na produtividade por aplicar químicos
-                    triggerTractorAnimation(index, "Oo=o> [Aplicando Herbicida...] Oo=o>");
+                    triggerTractorAnimation(index,'herb');
                 }
             } else {
                 alert("Ação inválida! O Herbicida só pode ser aplicado na fase de crescimento. Você perdeu o tempo deste plantio!");
@@ -142,7 +153,7 @@ function handlePlotAction(index) {
                 plot.modifier = 1.0;
                 plot.growthProgress = 0;
                 
-                triggerTractorAnimation(index, "[|||]>-o [Colhendo Safra...] [|||]>-o");
+                triggerTractorAnimation(index,'harvest');
             }
             break;
     }

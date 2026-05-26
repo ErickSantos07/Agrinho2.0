@@ -123,31 +123,27 @@ h1 { color: #1b5e20; margin-bottom: 5px; }
     border: 4px dashed #ffb300;
 }
 
-/* Animação do Trator sobre o terreno */
+/* Animação das Imagens sobre o terreno */
 .tractor-overlay {
     position: absolute;
     top: 0;
-    left: -100%;
-    width: 100%;
+    left: -150px; /* Começa fora da tela */
+    width: 120px;  /* Tamanho ideal para o terreno de 100px de altura */
     height: 100%;
-    background: rgba(255, 179, 0, 0.85);
-    color: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.4rem;
-    font-weight: bold;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
     z-index: 5;
     pointer-events: none;
 }
 
 @keyframes driveTractor {
-    0% { left: -100%; }
+    0% { left: -150px; }
     100% { left: 100%; }
 }
 
 .plot-large.working .tractor-overlay {
-    animation: driveTractor 1.5s linear forwards;
+    animation: driveTractor 2s linear forwards; /* 2 segundos para dar tempo de ver o maquinário passar */
 }
 
 /* Indicadores de Status internos do Terreno */
