@@ -104,17 +104,25 @@ function handlePlotAction(index) {
             break;
 
         case 'plant':
-            // REGRA NOVA: Agora verifica se tem moedas suficientes para plantar (Ex: $2) e deduz o valor
-            if (plot.isPlowed && plot.status === 'empty' && seeds > 0 && coins >= 2) {
-                coins -= 2; // Deduz o custo do plantio
-                seeds--;
+            // Convertemos para número inteiro para garantir que 2 seja igual a 2
+            let moedasAtuais = parseInt(coins);
+            let sementesAtuais = parseInt(seeds);
+
+            // REGRA: Se tiver solo arado, sementes e exatamente 2 moedas ou mais, ELE VAI DEIXAR
+            if (plot.isPlowed && plot.status === 'empty' && sementesAtuais > 0 && moedasAtuais >= 2) {
+                coins = moedasAtuais - 2; // Vai deduzir e ficar exatamente 0
+                seeds = sementesAtuais - 1;
+                
                 plot.status = 'planted';
                 plot.growthProgress = 0;
                 plot.requiredGrowth = isRaining ? 3 : 5; 
                 plot.modifier = 1.0; 
+                
                 triggerTractorAnimation(index, 'plant');
-            } else if (coins < 2 && plot.isPlowed && plot.status === 'empty' && seeds > 0) {
-                alert("Sem dinheiro suficiente para plantar! Custa $2.");
+            } else if (moedasAtuais < 2 && plot.isPlowed && plot.status === 'empty' && sementesAtuais > 0) {
+                alert("Sem dinheiro suficiente para plantar! Custa $2 e você tem $" + coins);
+            } else if (sementesAtuais <= 0 && plot.isPlowed && plot.status === 'empty') {
+                alert("Você não tem sementes disponíveis! Compre na loja.");
             }
             break;
 
