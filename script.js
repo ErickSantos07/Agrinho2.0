@@ -78,7 +78,7 @@ function triggerTractorAnimation(index, toolUsed) {
     setTimeout(() => {
         plotEl.classList.remove('working');
         overlay.style.backgroundImage = "none";
-    }, 2000);
+    }, 4000);
 }
 
 // Ações ao clicar com o rato num dos terrenos grandes
