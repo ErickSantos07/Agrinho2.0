@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fazenda 1D - Simulação Agrícola Avançada</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>🚜 Simulador Agrícola 1D</h1>
+        <p class="description">Gerencie 2 grandes terrenos. Selecione a operação com o rato e clique no terreno para trabalhar!</p>
+        
+        <div class="status-panel">
+            <div class="status-item">💰 Capital: $<span id="coins">30</span></div>
+            <div class="status-item">🌾 Sementes: <span id="seeds">4</span></div>
+            <div class="status-item" id="weather-display">☀️ Clima: Ensolarado</div>
+        </div>
+
+        <div class="tool-selector">
+            <button id="tool-plow" class="tool-btn active">🚜 Arar Solo ($5)</button>
+            <button id="tool-plant" class="tool-btn">🌱 Plantar</button>
+            <button id="tool-bio" class="tool-btn-special">🧪 Aplicar Biofertilizante ($8)</button>
+            <button id="tool-herb" class="tool-btn-special">⚠️ Aplicar Herbicida ($4)</button>
+            <button id="tool-harvest" class="tool-btn">🧺 Colher Rendimento</button>
+        </div>
+
+        <div class="farm-zone">
+            <div class="plot-large" id="plot-0">
+                <div class="tractor-overlay">🚜 ...trabalhando...</div>
+                <div class="plot-content">🟫 Terreno Bruto</div>
+                <div class="indicators"></div>
+            </div>
+            <div class="plot-large" id="plot-1">
+                <div class="tractor-overlay">🚜 ...trabalhando...</div>
+                <div class="plot-content">🟫 Terreno Bruto</div>
+                <div class="indicators"></div>
+            </div>
+        </div>
+
+        <div class="shop-panel">
+            <span>Precisa de insumos? </span>
+            <button id="btn-buy-seed">Comprar 1 Semente ($3 💰)</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+:root {
+    --bg-main: #f4f7f6;
+    --soil-raw: #5c4033;
+    --soil-plowed: #8b5a2b;
+    --rain-color: #e3f2fd;
+    --sun-color: #fffde7;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: var(--bg-main);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    user-select: none;
+}
+
+.game-container {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    text-align: center;
+    max-width: 800px;
+    width: 100%;
+}
+
+h1 { color: #1b5e20; margin-bottom: 5px; }
+.description { color: #555; font-size: 0.95rem; margin-bottom: 25px; }
+
+/* Status Climatológico e Financeiro */
+.status-panel {
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 25px;
+    background: #f1f8e9;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #d0e7b5;
+}
+
+.status-panel.rainy-day {
+    background: #e1f5fe;
+    border-color: #b3e5fc;
+    color: #01579b;
+}
+
+/* Menu de Ações */
+.tool-selector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.tool-btn, .tool-btn-special {
+    padding: 12px 18px;
+    font-size: 0.95rem;
+    border: 2px solid #cfd8dc;
+    background: #fafafa;
+    color: #37474f;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.tool-btn:hover, .tool-btn-special:hover {
+    background: #f5f5f5;
+    transform: translateY(-2px);
+}
+
+.tool-btn.active {
+    border-color: #2e7d32;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.tool-btn-special.active {
+    border-color: #00796b;
+    background-color: #e0f2f1;
+    color: #00796b;
+}
+
+/* Área dos 2 Terrenos Grandes */
+.farm-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.plot-large {
+    background-color: var(--soil-raw);
+    height: 100px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border 0.2s;
+    border: 4px solid transparent;
+}
+
+.plot-large:hover {
+    transform: scale(1.02);
+}
+
+.plot-large.plowed {
+    background-color: var(--soil-plowed);
+    border: 4px dashed #ffb300;
+}
+
+/* Animação do Trator sobre o terreno */
+.tractor-overlay {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 179, 0, 0.85);
+    color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.4rem;
+    font-weight: bold;
+    z-index: 5;
+    pointer-events: none;
+}
+
+@keyframes driveTractor {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.plot-large.working .tractor-overlay {
+    animation: driveTractor 1.5s linear forwards;
+}
+
+/* Indicadores de Status internos do Terreno */
+.indicators {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.badge.bio { background: #004d40; color: white; }
+.badge.herb { background: #dd2c00; color: white; }
+.badge.weed { background: #9e9d24; color: black; }
+
+/* Painel de Loja */
+.shop-panel {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+#btn-buy-seed {
+    background: #ef6c00;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+#btn-buy-seed:hover { background: #e65100; }
