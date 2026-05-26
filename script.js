@@ -104,23 +104,27 @@ function handlePlotAction(index) {
             break;
 
         case 'plant':
-            if (plot.isPlowed && plot.status === 'empty' && seeds > 0) {
+            // REGRA NOVA: Agora verifica se tem moedas suficientes para plantar (Ex: $2) e deduz o valor
+            if (plot.isPlowed && plot.status === 'empty' && seeds > 0 && coins >= 5) {
+                coins -= 5; // Deduz o custo do plantio
                 seeds--;
                 plot.status = 'planted';
                 plot.growthProgress = 0;
                 plot.requiredGrowth = isRaining ? 3 : 5; 
-                plot.modifier = 1.0; // Reseta modificadores anteriores
-                triggerTractorAnimation(index,'plant');
+                plot.modifier = 1.0; 
+                triggerTractorAnimation(index, 'plant');
+            } else if (coins < 2 && plot.isPlowed && plot.status === 'empty' && seeds > 0) {
+                alert("Sem dinheiro suficiente para plantar! Custa $2.");
             }
             break;
 
         case 'bio':
-            // REGRA: Só funciona rigorosamente se o status for 'growing' (em crescimento)
+            // REGRA: Garante que só funciona estritamente quando a plantação está em crescimento ('growing')
             if (plot.status === 'growing') {
                 if (plot.modifier === 1.0 && coins >= 8) {
                     coins -= 8;
                     plot.modifier = 1.7; // Incremento de 70% no rendimento
-                    triggerTractorAnimation(index,'bio');
+                    triggerTractorAnimation(index, 'bio');
                 }
             } else {
                 alert("Ação inválida! O Biofertilizante só pode ser aplicado na fase de crescimento. Você perdeu o tempo deste plantio!");
@@ -128,13 +132,12 @@ function handlePlotAction(index) {
             break;
 
         case 'herb':
-            // REGRA: Só funciona rigorosamente se o status for 'growing' (em crescimento)
             if (plot.status === 'growing') {
                 if (plot.hasWeed && coins >= 4) {
                     coins -= 4;
                     plot.hasWeed = false;
-                    plot.modifier = 0.75; // Prejuízo de 25% na produtividade por aplicar químicos
-                    triggerTractorAnimation(index,'herb');
+                    plot.modifier = 0.75; 
+                    triggerTractorAnimation(index, 'herb');
                 }
             } else {
                 alert("Ação inválida! O Herbicida só pode ser aplicado na fase de crescimento. Você perdeu o tempo deste plantio!");
@@ -144,21 +147,19 @@ function handlePlotAction(index) {
         case 'harvest':
             if (plot.status === 'ready') {
                 let baseProfit = 15;
-                
                 if (plot.hasWeed) baseProfit -= 6;
                 if (!isRaining) baseProfit -= 4;
 
                 let finalProfit = Math.max(2, Math.round(baseProfit * plot.modifier));
                 coins += finalProfit;
 
-                // Reseta completamente o lote grande para o estado bruto primário
                 plot.status = 'empty';
                 plot.isPlowed = false;
                 plot.hasWeed = false;
                 plot.modifier = 1.0;
                 plot.growthProgress = 0;
                 
-                triggerTractorAnimation(index,'harvest');
+                triggerTractorAnimation(index, 'harvest');
             }
             break;
     }
