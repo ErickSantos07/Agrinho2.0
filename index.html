@@ -3,44 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fazenda 1D - Simulação Agrícola Avançada</title>
+    <title>Simulador de Fazenda Retro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-container">
-        <h1>🚜 Simulador Agrícola 1D</h1>
-        <p class="description">Gerencie 2 grandes terrenos. Selecione a operação com o rato e clique no terreno para trabalhar!</p>
-        
-        <div class="status-panel">
-            <div class="status-item">💰 Capital: $<span id="coins">30</span></div>
-            <div class="status-item">🌾 Sementes: <span id="seeds">4</span></div>
-            <div class="status-item" id="weather-display">☀️ Clima: Ensolarado</div>
+
+    <h1>Fazenda 1D</h1>
+
+    <div class="painel">
+        <h3>Status da Fazenda</h3>
+        <p>Estação: <strong id="txt-estacao">Primavera</strong> (Turno: <span id="txt-turno">1</span>/10 para mudar)</p>
+        <p>Clima: <strong id="txt-clima">Ensolarado</strong></p>
+        <p>Estágio do Plantio: <strong id="txt-estagio">Preparado para Plantar</strong></p>
+        <p>Insumo Aplicado nesta Safra: <strong id="txt-insumo">Nenhum</strong></p>
+
+        <div class="campo-animacao" id="tela-campo">[....................]</div>
+
+        <div class="botoes">
+            <button onclick="passarTurno()">Avançar Tempo</button>
+            <button id="btn-plantar" onclick="plantar()">Plantar (Trator)</button>
+            <button id="btn-insumo" onclick="aplicarInsumo()">Aplicar Herbicida/Bio</button>
+            <button id="btn-colher" onclick="colher()">Colher (Colheitadeira)</button>
         </div>
 
-        <div class="tool-selector">
-            <button id="tool-plow" class="tool-btn active">🚜 Arar Solo ($5)</button>
-            <button id="tool-plant" class="tool-btn">🌱 Plantar</button>
-            <button id="tool-bio" class="tool-btn-special">🧪 Aplicar Biofertilizante ($8)</button>
-            <button id="tool-herb" class="tool-btn-special">⚠️ Aplicar Herbicida ($4)</button>
-            <button id="tool-harvest" class="tool-btn">🧺 Colher Rendimento</button>
-        </div>
-
-        <div class="farm-zone">
-            <div class="plot-large" id="plot-0">
-                <div class="tractor-overlay">🚜 ...trabalhando...</div>
-                <div class="plot-content">🟫 Terreno Bruto</div>
-                <div class="indicators"></div>
-            </div>
-            <div class="plot-large" id="plot-1">
-                <div class="tractor-overlay">🚜 ...trabalhando...</div>
-                <div class="plot-content">🟫 Terreno Bruto</div>
-                <div class="indicators"></div>
-            </div>
-        </div>
-
-        <div class="shop-panel">
-            <span>Precisa de insumos? </span>
-            <button id="btn-buy-seed">Comprar 1 Semente ($3 💰)</button>
+        <div class="logs" id="caixa-logs">
+            - Jogo iniciado. Prepare a terra e plante!
         </div>
     </div>
 
