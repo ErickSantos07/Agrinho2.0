@@ -17,10 +17,10 @@ function init() {
     setupTools();
     render();
     
-    // Loops Principais do Ciclo Agrícola
-    setInterval(weatherEngine, 8000); // Altera o clima a cada 8 segundos
-    setInterval(cropGrowthLoop, 2000); // Atualiza crescimento a cada 2 segundos
-    setInterval(weedSpawnEngine, 12000); // Chance de nascer praga a cada 12 segundos
+    // Loops Principais do Ciclo Agrícola (Prazos desacelerados a pedido do usuário)
+    setInterval(weatherEngine, 24000); // Altera o clima a cada 24 segundos (Mais lento)
+    setInterval(cropGrowthLoop, 6000); // Atualiza crescimento a cada 6 segundos (Mais lento)
+    setInterval(weedSpawnEngine, 16000); // Chance de nascer praga a cada 16 segundos
 }
 
 // Controla as ferramentas ativas via Rato
@@ -56,7 +56,7 @@ function weatherEngine() {
     }
 }
 
-// Ativa a animação visual do trator trabalhando
+// Ativa a animação visual do implemento trabalhando (Modelado em 1D sem emojis)
 function triggerTractorAnimation(index, labelText) {
     const plotEl = document.getElementById(`plot-${index}`);
     const overlay = plotEl.querySelector('.tractor-overlay');
@@ -75,7 +75,7 @@ function handlePlotAction(index) {
     let plot = farmPlots[index];
     const plotEl = document.getElementById(`plot-${index}`);
     
-    // Evita cliques se o trator já estiver a passar na tela
+    // Evita cliques se o implemento já estiver a passar na tela
     if (plotEl.classList.contains('working')) return;
 
     switch (currentTool) {
@@ -83,7 +83,7 @@ function handlePlotAction(index) {
             if (!plot.isPlowed && plot.status === 'empty' && coins >= 5) {
                 coins -= 5;
                 plot.isPlowed = true;
-                triggerTractorAnimation(index, "🚜 Trator Arando Solo... ($5)");
+                triggerTractorAnimation(index, "Oo=o> [Arando Solo...] Oo=o>");
             }
             break;
 
@@ -92,39 +92,44 @@ function handlePlotAction(index) {
                 seeds--;
                 plot.status = 'planted';
                 plot.growthProgress = 0;
-                // Se não estiver a chover, a planta exige mais ciclos para crescer
                 plot.requiredGrowth = isRaining ? 3 : 5; 
                 plot.modifier = 1.0; // Reseta modificadores anteriores
-                triggerTractorAnimation(index, "🚜 Semeadora Plantando Sementes...");
+                triggerTractorAnimation(index, "Oo=o> [Semeando Campo...] Oo=o>");
             }
             break;
 
         case 'bio':
-            if (plot.status !== 'empty' && plot.status !== 'ready' && plot.modifier === 1.0 && coins >= 8) {
-                coins -= 8;
-                plot.modifier = 1.7; // Incremento de 70% no rendimento
-                triggerTractorAnimation(index, "🚛 Pulverizador aplicando Biofertilizante... ($8)");
+            // REGRA: Só funciona rigorosamente se o status for 'growing' (em crescimento)
+            if (plot.status === 'growing') {
+                if (plot.modifier === 1.0 && coins >= 8) {
+                    coins -= 8;
+                    plot.modifier = 1.7; // Incremento de 70% no rendimento
+                    triggerTractorAnimation(index, "Oo=o> [Aplicando Biofertilizante...] Oo=o>");
+                }
+            } else {
+                alert("Ação inválida! O Biofertilizante só pode ser aplicado na fase de crescimento. Você perdeu o tempo deste plantio!");
             }
             break;
 
         case 'herb':
-            if (plot.hasWeed && coins >= 4) {
-                coins -= 4;
-                plot.hasWeed = false;
-                plot.modifier = 0.75; // Prejuízo de 25% na produtividade por aplicar químicos
-                triggerTractorAnimation(index, "🚛 Trator aplicando Herbicida... ($4)");
+            // REGRA: Só funciona rigorosamente se o status for 'growing' (em crescimento)
+            if (plot.status === 'growing') {
+                if (plot.hasWeed && coins >= 4) {
+                    coins -= 4;
+                    plot.hasWeed = false;
+                    plot.modifier = 0.75; // Prejuízo de 25% na produtividade por aplicar químicos
+                    triggerTractorAnimation(index, "Oo=o> [Aplicando Herbicida...] Oo=o>");
+                }
+            } else {
+                alert("Ação inválida! O Herbicida só pode ser aplicado na fase de crescimento. Você perdeu o tempo deste plantio!");
             }
             break;
 
         case 'harvest':
             if (plot.status === 'ready') {
-                // Lucro Base: Terreno grande gera 15 moedas
                 let baseProfit = 15;
                 
-                // Penalidade severa se colher com pragas ativas no mato
                 if (plot.hasWeed) baseProfit -= 6;
-                
-                // Se não choveu durante o término da maturação, perde rendimento por seca
                 if (!isRaining) baseProfit -= 4;
 
                 let finalProfit = Math.max(2, Math.round(baseProfit * plot.modifier));
@@ -137,7 +142,7 @@ function handlePlotAction(index) {
                 plot.modifier = 1.0;
                 plot.growthProgress = 0;
                 
-                triggerTractorAnimation(index, "🧺 Colhendo e Carregando Safra!");
+                triggerTractorAnimation(index, "[|||]>-o [Colhendo Safra...] [|||]>-o");
             }
             break;
     }
@@ -151,10 +156,9 @@ function cropGrowthLoop() {
     farmPlots.forEach((plot) => {
         if (plot.status === 'planted' || plot.status === 'growing') {
             
-            // Fatores de atraso: Erva daninha atrasa o progresso; falta de chuva também!
             let advanceChance = 1.0;
             if (plot.hasWeed) advanceChance -= 0.3;
-            if (!isRaining) advanceChance -= 0.2; // Sem chuva demora um pouco mais
+            if (!isRaining) advanceChance -= 0.2; 
 
             if (Math.random() <= advanceChance) {
                 plot.growthProgress++;
@@ -198,12 +202,12 @@ function render() {
             plotEl.classList.remove('plowed');
             contentEl.innerText = "🟫 Terreno Bruto (Precisa Arar)";
         } else {
-            plotEl.classList.remove('plowed'); // Quando plantado assume outra cor visual por cima
+            plotEl.classList.remove('plowed'); 
         }
 
-        // Exibe Emojis de desenvolvimento da lavoura grande
+        // Exibe desenvolvimento da lavoura grande
         if (plot.status === 'planted') contentEl.innerText = "🌱 Sementes Brotando...";
-        if (plot.status === 'growing') contentEl.innerText = "🌿 Lavoura em Crescimento...";
+        if (plot.status === 'growing') contentEl.innerText = "🌿 Lavoura em Crescimento (Janela de Insumos Aberta!)";
         if (plot.status === 'ready') contentEl.innerText = "🌾 Pronto para Colheita!";
 
         // Renderiza os crachás de status (Badges)
