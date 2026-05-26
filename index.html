@@ -3,63 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Fazenda Retro</title>
-    <style>
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-        .painel {
-            border: 2px solid #333;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #1e1e1e;
-            width: 90%;
-            max-width: 500px;
-            margin-bottom: 20px;
-        }
-        .campo-animacao {
-            background-color: #000;
-            padding: 15px;
-            font-size: 18px;
-            border-radius: 4px;
-            min-height: 25px;
-            white-space: pre;
-            margin: 15px 0;
-            color: #00ff00;
-            border: 1px dashed #444;
-        }
-        .botoes {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        button {
-            background-color: #2e7d32;
-            color: white;
-            border: none;
-            padding: 12px;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-family: inherit;
-        }
-        button:hover {
-            background-color: #388e3c;
-        }
-        button:disabled {
-            background-color: #555;
-            color: #888;
-            cursor: not-allowed;
-        }
-        .logs {
-            font-size: 13px;
-            color: #aaa;
-            max-height: 100px;
-            overflow-y: auto;
-            border-top:
+    <title>Fazenda 1D - Simulação Agrícola Profissional</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>🚜 Simulador Agrícola Avançado</h1>
+        <p class="description">Janela de aplicação: Biofertilizante e Herbicida <strong>SÓ</strong> funcionam na fase de crescimento!</p>
+        
+        <div class="status-panel">
+            <div class="status-item">💰 Capital: $<span id="coins">40</span></div>
+            <div class="status-item">🌾 Sementes: <span id="seeds">4</span></div>
+            <div class="status-item" id="weather-display">☀️ Clima: Ensolarado</div>
+        </div>
+
+        <div class="tool-selector">
+            <button id="tool-plow" class="tool-btn active">🚜 Arar Solo ($5)</button>
+            <button id="tool-plant" class="tool-btn">🌱 Plantar</button>
+            <button id="tool-bio" class="tool-btn-special">🧪 Biofertilizante ($8)</button>
+            <button id="tool-herb" class="tool-btn-special">⚠️ Herbicida ($4)</button>
+            <button id="tool-harvest" class="tool-btn">🌾 Colher Safra</button>
+        </div>
+
+        <div class="farm-zone">
